@@ -368,6 +368,7 @@ bool		exec(espShell *sh, Stream *s, char **args)
         }
     }
   fd.close();
+  free(newline);
   return (true);
 }
 
@@ -478,4 +479,10 @@ bool	cmd_sleep(espShell *sh, Stream *s, char **args)
 	return (true);
       }
   return (false);
+}
+
+bool    cmd_free(espShell *sh, Stream *s, char **args)
+{
+  s->println("Free memory: " + String(esp_get_free_heap_size()) + " bytes");
+  return (true);
 }

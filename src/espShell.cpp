@@ -19,6 +19,7 @@ t_cmdfunc       gl_commands[] = {
   { "alias", "alias command / shortcuts", alias },
   { "pin", "pin input/output control", pin },
   { "sleep", "sleep status/management command", cmd_sleep },
+  { "free", "show free memory", cmd_free },
   { "serial", "serial redirection tool", serial },
   { "exec", "execute commands from file", exec },
   { "delay", "sleeps for a specified number of milliseconds", cmd_delay },
@@ -167,7 +168,8 @@ espShell::checkCmdLine()
 bool
 espShell::runLine(char *line)
 {
-  
+  bool ret;
+
   if (this->_line)
     {
       free(_line);
@@ -178,7 +180,9 @@ espShell::runLine(char *line)
   strcpy(_line, line);
   this->_endline = strlen(line);
   this->_linelen = (strlen(line) + 1);
-  return (this->_interpreteLine());
+  ret = this->_interpreteLine();
+  this->_clearLine();
+  return (ret);
 }
 
 bool

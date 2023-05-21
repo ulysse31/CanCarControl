@@ -30,6 +30,8 @@ class ESPMoticsCfg
   ESPMoticsCfg(String name, char separator);
   ~ESPMoticsCfg();
   bool		loadCfg();
+  void		unloadCfg();
+  const char *	cfgFile(const char *name = 0);
   bool		saveCfg();
   String	getValue(const char *key) { String k = key; return(getValue(k)); }
   String	getValue(String key);

@@ -22,7 +22,34 @@ ESPMoticsCfg::ESPMoticsCfg(String name, char separator = '=')
 
 ESPMoticsCfg::~ESPMoticsCfg()
 {
+  this->unloadCfg();
+}
 
+
+const char *
+ESPMoticsCfg::cfgFile(const char *name)
+{
+  if (name)
+    {
+      _filename = name;
+      _filepath = _filename;
+    }
+  return (_filename.c_str());
+}
+
+void
+ESPMoticsCfg::unloadCfg()
+{
+  cfgNode *n;
+  cfgNode *l;
+
+  while (_node)
+    {
+      l = _node;
+      n = _node->next();
+      delete (l);
+      _node = n;
+    }
 }
 
 bool
@@ -30,21 +57,25 @@ ESPMoticsCfg::loadCfg()
 {
   String  line;
 
-  //  Serial.print("DBG: Opening cfg file ");
-  //  Serial.println(_filepath);
+  //Serial.print("DBG: Opening cfg file ");
+  //Serial.println(_filepath);
   _fd = SPIFFS.open(_filepath, "r");
   if (!_fd)
     return (false);
   while (_fd.available())
   {
     line = _fd.readStringUntil('\n');
+    //Serial.println("DEBUG LINE READ");
     if (_node)
       {
         cfgNode *n;
+        cfgNode *p;
         String k = line.substring(0, line.indexOf(_separator));
         String v = line.substring(line.indexOf(_separator) + 1);
-        n = new cfgNode(&(k), &(v), _node);
-        _node = n;
+        n = new cfgNode(&(k), &(v), 0);
+	for (p = _node; p->next(); p = p->next())
+	  ;
+	p->next(n);
       }
       else
       {

@@ -32,6 +32,7 @@ bool    serial(espShell *sh, Stream *s, char **args);
 bool    exec(espShell *sh, Stream *s, char **args);
 bool    cmd_delay(espShell *sh, Stream *s, char **args);
 bool    cmd_sleep(espShell *sh, Stream *s, char **args);
+bool    cmd_free(espShell *sh, Stream *s, char **args);
 bool    restart(espShell *sh, Stream *s, char **args);
 const char * getfullpath(const char *ptr);
 void    showbuff(Stream *s, const char *title, const char *buff);
