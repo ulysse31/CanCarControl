@@ -47,7 +47,7 @@ In the end, the shell on this device (CanCarControl) has (for now) the following
 
 ## System config
 A basic configuration file named /etc/Can.cfg on the SPIFFS contains all the common variable settings.  
-PLEASE REMEMBER THAT SPIFFS DO NOT SUPPORT DIRECTORIES...  so it is one file named /etc/Can.cfg yes ...
+PLEASE REMEMBER THAT SPIFFS DO NOT SUPPORT DIRECTORIES...  so it is one file named /etc/Can.cfg yes ...  
 Here is a list of parameters used actually:
   |    Variable Name    |   Value Type   |                        Description                        |
   | ------------------- | -------------- | --------------------------------------------------------- |
