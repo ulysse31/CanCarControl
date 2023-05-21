@@ -367,6 +367,8 @@ espShell::_interpreteLine()
       _serial->print(args[0]);
       _serial->print(": ");
       _serial->println("Command not found.");
+      if (_echo == false)
+        this->_serial->write(0x04);
     }
   free(args);
   return (true);

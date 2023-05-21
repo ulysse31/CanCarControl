@@ -341,8 +341,6 @@ bool		exec(espShell *sh, Stream *s, char **args)
       newline[newendline] = fd.read();
       if (newendline == 0 && newline[newendline] == '\n')
 	continue;
-      if (sh->interactive())
-	s->print(newline[newendline]);
       if (newline[newendline] == '\n')
         {
 	  newline[newendline] = 0;
@@ -390,12 +388,12 @@ bool	cmd_delay(espShell *sh, Stream *s, char **args)
 bool	sleep_status(Stream *s, char **args)
 {
   if (CanCarCfg.getValue("EnableSleep") == "true")
-    s->println("Sleep is enabled");
+    s->println("Sleep is on");
   else
-    s->println("Sleep is disabled");
+    s->println("Sleep is off");
   if (CanCarCfg.getValue("InactivityTimeout") != "")
     {
-      s->print("Will go to Sleep after ");
+      s->print("Sleep after ");
       s->print(CanCarCfg.getValue("InactivityTimeout"));
       s->println(" seconds of Inactivity");
     }
@@ -412,14 +410,14 @@ bool	sleep_status(Stream *s, char **args)
 bool	sleep_disable(Stream *s, char **args)
 {
   CanCarCfg.setValue("EnableSleep", "false");
-  s->println("Sleep is now disabled");
+  s->println("Sleep is off");
   return (true);
 }
 
 bool	sleep_enable(Stream *s, char **args)
 {
   CanCarCfg.setValue("EnableSleep", "true");
-  s->println("Sleep is now enabled");
+  s->println("Sleep is on");
   return (true);
 }
 
@@ -481,7 +479,8 @@ bool	cmd_sleep(espShell *sh, Stream *s, char **args)
   return (false);
 }
 
-bool    cmd_free(espShell *sh, Stream *s, char **args)
+
+bool	cmd_free(espShell *sh, Stream *s, char **args)
 {
   s->println("Free memory: " + String(esp_get_free_heap_size()) + " bytes");
   return (true);
