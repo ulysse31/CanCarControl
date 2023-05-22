@@ -21,30 +21,34 @@ While creating this projet, I started thinking on a really basic and light shell
 The goal at first was to be able to execute different actions on the CAN-bus (like dumping, injecting ...) ... I quickly found myself limited needing to store settings ... so then I created the ESPMoticsCfg class ... then ... to manage the files in the SPIFFS ... I added some commands to manage the filesystem via the shell ... them other commands for Lora ...  
 NB: THE SHELL DO NOT HAVE TERMCAPS SUPPORT => you type your command, if you need to correct, backspace is (the only) supported feature ...  
 In the end, the shell on this device (CanCarControl) has (for now) the following commands:
-  * cat: show file content
-  * ls: list files
-  * rm: delete a file
-  * cp: copy a file
-  * mv: rename a file
-  * ed: basic "per line file editor" (NO TERMCAPS/CURSOR ACTION, ONLY typing and BACKSPACE if needed)
-  * md5sum: calculates the md5 of a file (useful for OTA updates)
-  * xmreceive: a command to receive a file via xmodem protocol over the serial
-  * candump: command interface for dumping CAN-Bus
-  * canwait: waits during a given time for a list of CAN-IDS, useful when raw flow is huge (often the case)
-  * fwupdate: proceed to OTA with the given file
-  * ifconfig: allows to bring wifi up/down (required parameters needs to be set in the configuration settings)
-  * interactive: enable/disable shell "interactiveness" (echo, verbose) => the lora serial uses a non-interactive shell ...
-  * cfg: command to manage main configuration parameters
-  * alias: alias command / shortcuts management tool
-  * pin: gpio pin management => allows to set a pin mode, read and/or write HIGH / LOW
-  * sleep: command shortcut to manage sleep configuration parameters => after setting them you still must do a "cfg save" to keep settings at reboot
-  * free: shows free memory (useful for hunting memory leaks)
-  * serial: serial management tool => allow to connect from a serial to another serial, at a given speed ...
-  * exec: execute commands from a given file
-  * delay: waits x ms then ends ...
-  * lorasend: sends a command to distant lora shell
-  * lorasecure: enable / disables authentication system on local listening lora shell
-  * restart: restart the device
+
+  | Command | Category | Description |
+  | ------- | ------ | ----------------- |
+  | cat | fs | show file content |
+  | ls | fs | list files |
+  | rm | fs | delete a file |
+  | cp | fs | copy a file |
+  | mv | fs | rename a file |
+  | ed | fs | basic "per line file editor" (NO TERMCAPS/CURSOR ACTION, ONLY typing and BACKSPACE if needed) |
+  | md5sum | sys | calculates the md5 of a file (useful for OTA updates) |
+  | xmreceive | sys | a command to receive a file via xmodem protocol over the serial |
+  | fwupdate | sys | proceed to OTA with the given file |
+  | ifconfig | sys | allows to bring wifi up/down (required parameters needs to be set in the configuration settings) |
+  | cfg | sys | command to manage main configuration parameters |
+  | alias | sys | alias command / shortcuts management tool |
+  | pin | sys | gpio pin management => allows to set a pin mode, read and/or write HIGH / LOW |
+  | sleep | sys | command shortcut to manage sleep configuration parameters => after setting them you still must do a "cfg save" to keep settings at reboot |
+  | free | sys | shows free memory (useful for hunting memory leaks) |
+  | serial | sys | serial management tool => allow to connect from a serial to another serial, at a given speed ... |
+  | exec | sys | execute commands from a given file |
+  | delay | sys | waits x ms then ends ... |
+  | restart | sys | restart the device |
+  | candump | CAN | command interface for dumping CAN-Bus |
+  | canwait | CAN | waits during a given time for a list of CAN-IDS, useful when raw flow is huge (often the case) |
+  | canwrite | CAN | injects CAN-bus messages into CAN-bus Network, from arguments or from a given file |
+  | interactive | LoRa | enable/disable shell "interactiveness" (echo, verbose) => the lora serial uses a non-interactive shell ... |
+  | lorasend | LoRa | sends a command to distant lora shell |
+  | lorasecure | LoRa | enable / disables authentication system on local listening lora shell |
 
 ## System config
 A basic configuration file named /etc/Can.cfg on the SPIFFS contains all the common variable settings.  
