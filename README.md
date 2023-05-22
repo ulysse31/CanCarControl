@@ -1,14 +1,23 @@
 # CanCarControl
 CanBus car control device: read, interpret &amp; inject CAN Bus messages on your car.  
-This project uses :
+The goal of this project is to play with the car, with a "DIY"/"Homemade" remote (other repo) in order to do stuff such as:  
+* Locking/unlocking the car
+* Get the GPS infos
+* Enable/disable the warnings
+* Opening closing the windows
+* Get the windows and door status
+All this remotely (of course) within a range of 2/3 kilometers ^^" (thanks LoRa)  
+  
+  
+This project uses the following hardware:
 * A LuatOS ESP32-C3 board
 * A MCP2515 module board
 * A E220-400T22D board (or, any other 7 pin LoRa EByte module)
 * A LM2596S module board as power supply (regulated to 5V) 
 
-The 6 pin connector feats the BMW e87 CID display connector.  
-
-for the schematics of CanCarControl, please visit:  
+The 6 pin connector feats the BMW e87 CID display connector (this is for ease in my car, but fill free to take my schematics and make your own).  
+  
+For the schematics of CanCarControl, please visit:  
 
 https://oshwlab.com/ulysse31/espcan_car
 
@@ -72,3 +81,50 @@ Here is a list of parameters used actually:
   | WWWuser             |    string      | login to use in web service authentication                |
   | WWWpass             |    string      | password to use in web service authentication             |
   
+## How it (concretely) works
+this "mini-system" uses variables and shell commands to do the needed actions, to get things working, you first need to identify the CAN-Bus messages that you want to either analyze or inject.   
+#### On this section we'll take a concret example : trying to lock the car on our own.  
+we first need to identify the locking sequence, on my side, I did not had any documentation from the car manufacturer (BMW) to know exactly what what the usable message, so had to do some internet digging, and also used the candump command, which after dumping the CAN-Bus while locking/unlocking multiple times the car (and counting how much locks/unlocks were made).  
+candump will dump all content passing on the CAN-Bus network, the output content is like :  
+>[...]  
+>7919,0x1A0,0x8,0x0,0x80,0x0,0x0,0x80,0x0,0x18,0xBA  
+>7943,0x1D0,0x8,0x83,0xFF,0x49,0xCE,0x0,0x0,0xFD,0xA6  
+>7953,0xA8,0x8,0xE5,0x2C,0xFD,0x20,0xFD,0xF1,0x3,0x0  
+>7954,0xAA,0x8,0x58,0x2B,0xFD,0x0,0x0,0x0,0x84,0x0  
+>7967,0x4F8,0x8,0x0,0x52,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF  
+>7970,0x130,0x5,0x0,0x1,0x14,0xF,0x4A  
+>[...]  
+  
+The output is csv compliant, and is composed of the following columns : timestamp (in ms), CAN-ID, data-length,byte1,byte2,byte3...  
+| timestamp (in ms) | CAN-MsgID | data length | data bytes |
+| ----------------- | --------- | ----------- | ------ |
+  
+After some testing, and for my car, I discovered that there was multiple types of locks (central locking vs remote/external/real locking ...), and had to differentiate ... anyways ... the sequence that I wanted something line was :
+  
+>[...]  
+>2009,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>2114,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>2215,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>2445,0x2A0,0x8,0x88,0x88,0x88,0x1,0xE,0x43,0x26,0x3  
+>[...]  
+  
+So I created a file named "lock" on the SPIFFS (using ed command), containing the following :
+  
+>9,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>114,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>215,0x2A0,0x8,0x22,0x22,0x18,0x1,0xE,0x43,0x26,0x3  
+>445,0x2A0,0x8,0x88,0x88,0x88,0x1,0xE,0x43,0x26,0x3  
+  
+Tested it typing command "canwrite -f lock" ... and the car locked itself ...  
+Now, I create an alias named "lock" with command "canwrite -f lock":  
+>alias lock "canwrite -f lock"
+Test my alias typing "lock" as command ... it worked ! ^^'  
+finally save my alias:  
+
+>alias save
+
+This allows the alias to be loaded at boot, and we are done ... we just need then to tell the remote to send to the lora shell the "lock" command via the command:  
+  
+> lorasend lock
+  
+On the remote shell (or via its screen GUI, which launches the shell command ...) and the remote will lock the car ^^'  
