@@ -1,11 +1,14 @@
 # CanCarControl
 CanBus car control device: read, interpret &amp; inject CAN Bus messages on your car.  
 The goal of this project is to play with the car, with a "DIY"/"Homemade" remote (other repo) in order to do stuff such as:  
+  
 * Locking/unlocking the car
 * Get the GPS infos
 * Enable/disable the warnings
 * Opening closing the windows
 * Get the windows and door status
+* ...  
+  
 All this remotely (of course) within a range of 2/3 kilometers ^^" (thanks LoRa)  
   
   
