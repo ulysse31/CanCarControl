@@ -20,8 +20,10 @@ t_cmdfunc       gl_commands[] = {
   { "pin", "pin input/output control", pin },
   { "sleep", "sleep status/management command", cmd_sleep },
   { "free", "show free memory", cmd_free },
+  { "echo", "echo text", echo },
   { "serial", "serial redirection tool", serial },
   { "exec", "execute commands from file", exec },
+  { "gps", "waits and extract GPS positioning from CAN-Bus GPS data", gps },
   { "delay", "sleeps for a specified number of milliseconds", cmd_delay },
   { "lorasend", "send command via lora", lorasend },
   { "lorasecure", "enable/disable auth in lorashell", lorasecure },
@@ -175,8 +177,8 @@ espShell::runLine(char *line)
       free(_line);
       _line = 0;
     }
-  this->_line = (char *)xmalloc(sizeof(*_line) * (strlen(line) + 1));
-  memset(_line, 0, sizeof(*_line) * (strlen(line) + 1));
+  this->_line = (char *)xmalloc(sizeof(*_line) * (strlen(line) + 2));
+  memset(_line, 0, sizeof(*_line) * (strlen(line) + 2));
   strcpy(_line, line);
   this->_endline = strlen(line);
   this->_linelen = (strlen(line) + 1);

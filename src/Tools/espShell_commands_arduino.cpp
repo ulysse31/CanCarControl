@@ -485,3 +485,17 @@ bool	cmd_free(espShell *sh, Stream *s, char **args)
   s->println("Free memory: " + String(esp_get_free_heap_size()) + " bytes");
   return (true);
 }
+
+bool    echo(espShell *sh, Stream *s, char **args)
+{
+  int   i;
+
+  for (i = 1; args[i]; i++)
+    {
+      if (i != 1)
+        s->print(" ");
+      s->print(args[i]);
+    }
+  s->println();
+  return (true);
+}
