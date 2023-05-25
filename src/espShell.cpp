@@ -23,6 +23,7 @@ t_cmdfunc       gl_commands[] = {
   { "echo", "echo text", echo },
   { "serial", "serial redirection tool", serial },
   { "exec", "execute commands from file", exec },
+  { "doorstatus", "waits and extract door status from CAN-Bus GPS data", doorstatus },
   { "gps", "waits and extract GPS positioning from CAN-Bus GPS data", gps },
   { "delay", "sleeps for a specified number of milliseconds", cmd_delay },
   { "lorasend", "send command via lora", lorasend },
@@ -32,12 +33,13 @@ t_cmdfunc       gl_commands[] = {
 };
 
 
-espShell::espShell(Stream *s, bool echo, bool secure)
+espShell::espShell(Stream *s, bool echo, bool interactive, bool secure)
 {
   _serial = s;
   _line = 0;
   _endline = 0;
   _linelen = 16;
+  _interactive = interactive;
   _echo = echo;
   _secure = secure;
   _line = (char *)(xmalloc(sizeof(*_line) * (_linelen + 1)));
@@ -154,7 +156,7 @@ espShell::checkCmdLine()
     {
       if (_secure == false || (this->_endline > 0 && this->authCheck()))
 	{
-	  if (_echo)
+	  if (_echo || _interactive)
 	    _serial->println("");
 	  else
 	    _serial->write(0x04);
@@ -203,7 +205,7 @@ espShell::_readLine()
 	}
       if (_line[_endline] == 0x08 && _endline > 0)
 	{
-	  if (_echo)
+	  if (_interactive)
 	    {
 	      _serial->print('\b');
 	      _serial->print(' ');
@@ -292,7 +294,7 @@ espShell::_clearLine()
 void
 espShell::_prompt()
 {
-  if (_echo)
+  if (_interactive)
     {
       _serial->print("[CarSH: ");
       _serial->print(_currentPath);
@@ -345,7 +347,7 @@ espShell::_interpreteLine()
     if ((i = strcmp(f->name, args[0])) == 0)
       {
 	f->fct(this, this->_serial, args);
-	if (_echo == false)
+	if (_interactive == false)
 	  this->_serial->write(0x04);
 	LastActivity = millis();
 	found = true;
@@ -369,7 +371,7 @@ espShell::_interpreteLine()
       _serial->print(args[0]);
       _serial->print(": ");
       _serial->println("Command not found.");
-      if (_echo == false)
+      if (_interactive == false)
         this->_serial->write(0x04);
     }
   free(args);

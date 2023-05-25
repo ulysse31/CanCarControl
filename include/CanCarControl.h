@@ -16,6 +16,7 @@
 # include <Wire.h>
 # include <WiFiClient.h>
 # include <WebServer.h>
+# include <TelnetStream.h>
 # include <ESPmDNS.h>
 # include <Update.h>
 # include "mbedtls/aes.h"
@@ -112,6 +113,8 @@ ESPMoticsCfg            Aliases(ALIASFILE, '=');
 ESPMoticsWebServer      web(80);
 espShell *		shell;
 espShell *		shellLoRa;
+espShell *		shellTelnet;
+
 MCP_CAN			mcp2515(MCP_CS);
 unsigned long		LastActivity;
 #  else
@@ -119,6 +122,7 @@ extern ESPMoticsCfg		CanCarCfg;
 extern ESPMoticsCfg		Aliases;
 extern espShell *		shell;
 extern espShell *		shellLoRa;
+extern espShell *		shellTelnet;
 extern MCP_CAN			mcp2515;
 extern unsigned long		LastActivity;
 #  ifndef _DECLARE_GLOBAL_WEBSRV_
@@ -139,6 +143,8 @@ public:
   bool                  checkWiFiParams(Stream *callingStream);
   bool                  unloadWiFi(Stream *callingStream);
   bool                  isWiFiActive() { return (_wifiActive); }
+  bool			isWebActive() { return (_webActive); }
+  bool			isTelnetActive() { return (_telnetActive); }
   void			loadConfig();
   void			loadServices();
   void			taskLoop();
@@ -147,6 +153,8 @@ public:
 private:
   bool			_spiffsstatus;
   bool                  _wifiActive;
+  bool			_webActive;
+  bool			_telnetActive;
 };
 
 # ifdef _DECLARE_GLOBAL_CANCARCONTROL_

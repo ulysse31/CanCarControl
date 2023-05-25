@@ -28,8 +28,11 @@ CanCarControl::init()
     Serial.println("Error initializing MCP2515");
   mcp2515.setMode(MCP_NORMAL);
   shell = new espShell(&Serial);
-  shellLoRa = new espShell(&Serial1, false, true);
+  shellLoRa = new espShell(&Serial1, false, false, true);
+  shellTelnet = 0;
   _wifiActive = false;
+  _webActive = false;
+  _telnetActive = false;
 }
 
 bool
@@ -81,11 +84,14 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	}
       callingStream->println("[OK]");
       callingStream->println("");
-      web.spiffsinit(_spiffsstatus);
-      callingStream->println("");
-      callingStream->print("Starting Web Service ...\t");
-      callingStream->println((web.spiffsinit() ? "[OK]" : "[Failed]"));
-      callingStream->println("");
+      if (CanCarCfg.getValue("EnableWebService") == "true")
+	{
+	  web.spiffsinit(_spiffsstatus);
+	  callingStream->println("");
+	  callingStream->print("Starting Web Service ...\t");
+	  callingStream->println((web.spiffsinit() ? "[OK]" : "[Failed]"));
+	  callingStream->println("");
+	}
       callingStream->print("Starting MDNS Responder ...\t");
       if (!MDNS.begin(CanCarCfg.getcValue("WiFiHost")))
 	{
@@ -94,13 +100,23 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	}
       callingStream->println("[OK]");
       callingStream->println("");
-      if (CanCarCfg.getValue("WWWuser") != "")
-	web.setuser(CanCarCfg.getcValue("WWWuser"));
-      if (CanCarCfg.getValue("WWWpass") != "")
-	web.setpass(CanCarCfg.getcValue("WWWpass"));
-      callingStream->print("Applying Web bindings ...\t");
-      web.bindings();
-      callingStream->println("[OK]");
+      if (CanCarCfg.getValue("EnableWebService") == "true")
+	{
+	  if (CanCarCfg.getValue("WWWuser") != "")
+	    web.setuser(CanCarCfg.getcValue("WWWuser"));
+	  if (CanCarCfg.getValue("WWWpass") != "")
+	    web.setpass(CanCarCfg.getcValue("WWWpass"));
+	  callingStream->print("Applying Web bindings ...\t");
+	  web.bindings();
+	  _webActive = true;
+	  callingStream->println("[OK]");
+	}
+      if (CanCarCfg.getValue("EnableTelnetService") == "true" && _telnetActive == false)
+	{
+	  TelnetStream.begin();
+	  shellTelnet = new espShell(&TelnetStream, false);
+	  _telnetActive = true;
+	}
       this->_wifiActive = true;
       return (true);
     }
@@ -115,9 +131,19 @@ CanCarControl::unloadWiFi(Stream *callingStream)
   if (_wifiActive == false)
     return (false);
   //
-  callingStream->print("Stopping Web Service ...\t");
-  web.stop();
-  callingStream->println("[OK]");
+  if (_webActive)
+    {
+      callingStream->print("Stopping Web Service ...\t");
+      web.stop();
+      callingStream->println("[OK]");
+    }
+  if (_telnetActive)
+    {
+      TelnetStream.stop();
+      delete shellTelnet;
+      shellTelnet = 0;
+      _telnetActive = false;
+    }
   callingStream->print("Disconnecting Wireless ...\t");
   WiFi.disconnect(true);
   callingStream->println("[OK]");
@@ -234,7 +260,12 @@ CanCarControl::taskLoop()
   shell->checkCmdLine();
   shellLoRa->checkCmdLine();
   if (this->isWiFiActive())
-    web.handleClient(); 
+    {
+      if (this->isWebActive())
+	web.handleClient();
+      if (this->isTelnetActive())
+	shellTelnet->checkCmdLine();
+    }
   delay(10);
 }
 

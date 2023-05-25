@@ -30,6 +30,7 @@ bool    alias(espShell *sh, Stream *s, char **args);
 bool    pin(espShell *sh, Stream *s, char **args);
 bool    serial(espShell *sh, Stream *s, char **args);
 bool    exec(espShell *sh, Stream *s, char **args);
+bool    doorstatus(espShell *sh, Stream *s, char **args);
 bool    gps(espShell *sh, Stream *s, char **args);
 bool    cmd_delay(espShell *sh, Stream *s, char **args);
 bool    cmd_sleep(espShell *sh, Stream *s, char **args);
@@ -58,7 +59,7 @@ typedef struct		s_menulist
 class espShell
 {
  public:
-  espShell(Stream *s, bool echo = true, bool secure = false);
+  espShell(Stream *s, bool echo = true, bool interactive = true, bool secure = false);
   ~espShell();
   bool			authCheck();
   void			checkCmdLine();
@@ -69,8 +70,8 @@ class espShell
   bool			getYesNo(const char *Message);
   void			secure(bool secure) { _secure = secure; }
   bool			secure() { return (_secure); }
-  void			interactive(bool echo) { _echo = echo; }
-  bool			interactive() { return (_echo); }
+  void			interactive(bool interactive) { _interactive = interactive; }
+  bool			interactive() { return (_interactive); }
   void			convertAliases();
   bool			runLine(char *line);
 
@@ -83,6 +84,7 @@ private:
   char *		_line;
   short			_endline;
   short			_linelen;
+  bool			_interactive;
   bool			_echo;
   bool			_secure;
   t_menulist *		_actualmenu;
