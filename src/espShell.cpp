@@ -14,7 +14,8 @@ t_cmdfunc       gl_commands[] = {
   { "canwrite", "CAN packet writing: from arguments", canwrite },
   { "fwupdate", "firmware update command", fwupdate },
   { "ifconfig", "show network connection states", ifconfig },
-  { "interactive", "enable/disable interactive shell parameters (echo, verbose...)", interactive },
+  { "interactive", "enable/disable interactive shell parameters (prompt, verbosity...)", interactive },
+  { "setecho", "enable/disable character echoing", setecho },
   { "cfg", "main config parameters editor", cfg },
   { "alias", "alias command / shortcuts", alias },
   { "pin", "pin input/output control", pin },
@@ -156,10 +157,11 @@ espShell::checkCmdLine()
     {
       if (_secure == false || (this->_endline > 0 && this->authCheck()))
 	{
-	  if (_echo || _interactive)
+	  if (_echo)
 	    _serial->println("");
 	  else
-	    _serial->write(0x04);
+	    if (!_interactive)
+	      _serial->write(0x04);
 	  this->convertAliases();
 	  this->_interpreteLine();
 	}
@@ -197,7 +199,7 @@ espShell::_readLine()
       _line[_endline] = _serial->read();
       LastActivity = millis();
       if (_endline == 0 && _line[_endline] == '\n')
-	return (false);
+	  return (false);
       if (_endline == 0 && _line[_endline] == 0x08)
 	{
 	  _line[_endline] = 0;

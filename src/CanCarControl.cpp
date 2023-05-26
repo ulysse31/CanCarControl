@@ -66,6 +66,9 @@ CanCarControl::checkWiFiParams(Stream *callingStream)
 bool
 CanCarControl::loadWiFi(Stream *callingStream)
 {
+  unsigned long time;
+  int		wfStatus;
+  
   if (_wifiActive == true || checkWiFiParams(callingStream) == false)
     return (false);
   callingStream->println("");
@@ -77,10 +80,17 @@ CanCarControl::loadWiFi(Stream *callingStream)
       int scanResult = WiFi.scanNetworks(); // doing scan
       if(scanResult > 0)
 	WiFi.begin(CanCarCfg.getcValue("WiFiSSID"), CanCarCfg.getcValue("WiFiPassphrase"));
-      while (WiFi.status() != WL_CONNECTED)
+      time = millis();
+      while ((wfStatus = WiFi.status()) != WL_CONNECTED && (millis() - time) < (1000*60*1)) // 1 min timeout
 	{
 	  delay(500);
 	  callingStream->print(".");
+	}
+      if (wfStatus != WL_CONNECTED)
+	{
+	  callingStream->println("[Failed]");
+	  callingStream->println("");
+	  return (false);
 	}
       callingStream->println("[OK]");
       callingStream->println("");
@@ -113,7 +123,15 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	}
       if (CanCarCfg.getValue("EnableTelnetService") == "true" && _telnetActive == false)
 	{
+	  callingStream->print("Starting Telnet Service... ");
 	  TelnetStream.begin();
+	  callingStream->println("[OK]");
+	  /*
+	  if (TelnetStream.begin())
+	    callingStream->println("[OK]");
+	  else
+	    callingStream->println("[Failed]");
+	  */
 	  shellTelnet = new espShell(&TelnetStream, false);
 	  _telnetActive = true;
 	}
@@ -264,7 +282,10 @@ CanCarControl::taskLoop()
       if (this->isWebActive())
 	web.handleClient();
       if (this->isTelnetActive())
-	shellTelnet->checkCmdLine();
+	{
+	  shellTelnet->checkCmdLine();
+	  TelnetStream.flush();
+	}
     }
   delay(10);
 }

@@ -197,3 +197,20 @@ bool		interactive(espShell *sh, Stream *s, char **args)
     sh->interactive(false);
   return (true);
 }
+
+bool		setecho(espShell *sh, Stream *s, char **args)
+{
+  if (args[1] == 0)
+    {
+      s->print("Echo is ");
+      s->println((sh->echo() == true ? "ON" : "OFF"));
+      s->println();
+      s->println("Usage: setecho on|off");
+      return (true);
+    }
+  if (strcmp(args[1], "on") == 0)
+    sh->echo(true);
+  if (strcmp(args[1], "off") == 0)
+    sh->echo(false);
+  return (true);
+}

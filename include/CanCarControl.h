@@ -114,7 +114,7 @@ ESPMoticsWebServer      web(80);
 espShell *		shell;
 espShell *		shellLoRa;
 espShell *		shellTelnet;
-
+//ESPTelnetStream		TelnetStream;
 MCP_CAN			mcp2515(MCP_CS);
 unsigned long		LastActivity;
 #  else
@@ -123,6 +123,7 @@ extern ESPMoticsCfg		Aliases;
 extern espShell *		shell;
 extern espShell *		shellLoRa;
 extern espShell *		shellTelnet;
+//extern ESPTelnetStream		TelnetStream;
 extern MCP_CAN			mcp2515;
 extern unsigned long		LastActivity;
 #  ifndef _DECLARE_GLOBAL_WEBSRV_

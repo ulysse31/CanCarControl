@@ -22,6 +22,7 @@ bool    canwrite(espShell *sh, Stream *s, char **args);
 bool    canwritefile(espShell *sh, Stream *s, char **args);
 bool    fwupdate(espShell *sh, Stream *s, char **args);
 bool    interactive(espShell *sh, Stream *s, char **args);
+bool    setecho(espShell *sh, Stream *s, char **args);
 bool    ifconfig(espShell *sh, Stream *s, char **args);
 bool    lorasend(espShell *sh, Stream *s, char **args);
 bool    lorasecure(espShell *sh, Stream *s, char **args);
@@ -72,6 +73,8 @@ class espShell
   bool			secure() { return (_secure); }
   void			interactive(bool interactive) { _interactive = interactive; }
   bool			interactive() { return (_interactive); }
+  void			echo(bool echo) { _echo = echo; }
+  bool			echo() { return (_echo); }
   void			convertAliases();
   bool			runLine(char *line);
 
