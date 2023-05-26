@@ -120,7 +120,9 @@ So I created a file named "lock" on the SPIFFS (using ed command), containing th
   
 Tested it typing command "canwrite -f lock" ... and the car locked itself ...  
 Now, I create an alias named "lock" with command "canwrite -f lock":  
->alias lock "canwrite -f lock"
+  
+>alias lock "canwrite -f lock"  
+  
 Test my alias typing "lock" as command ... it worked ! ^^'  
 finally save my alias:  
 
