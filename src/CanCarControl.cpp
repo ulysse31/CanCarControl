@@ -1,4 +1,4 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
 CanCarControl::CanCarControl()
 {
@@ -27,8 +27,8 @@ CanCarControl::init()
   if (mcp2515.begin(MCP_ANY, CAN_100KBPS, MCP_8MHZ) != CAN_OK)
     Serial.println("Error initializing MCP2515");
   mcp2515.setMode(MCP_NORMAL);
-  shell = new espShell(&Serial);
-  shellLoRa = new espShell(&Serial1, false, false, true);
+  shell = new espShell("CarSH", &Serial);
+  shellLoRa = new espShell("CarSH", &Serial1, false, false, true);
   shellTelnet = 0;
   _wifiActive = false;
   _webActive = false;
@@ -40,22 +40,22 @@ CanCarControl::checkWiFiParams(Stream *callingStream)
 {
   bool	ret = true;
 
-  if (CanCarCfg.getValue("WiFiHost") == "")
+  if (CanCfg.getValue("WiFiHost") == "")
     {
       callingStream->println("\t- WiFiHost not set, please set a Wireless Hostname");
       ret = false;
     }
-  if (CanCarCfg.getValue("WiFiMode") == "")
+  if (CanCfg.getValue("WiFiMode") == "")
     {
       callingStream->println("\t- WiFiMode not set, please set a Wireless Mode (either \"AP\" or \"STA\")");
       ret = false;
     }
-  if (CanCarCfg.getValue("WiFiSSID") == "")
+  if (CanCfg.getValue("WiFiSSID") == "")
     {
       callingStream->println("\t- WiFiSSID not set, please set an SSID");
       ret = false;
     }
-  if (CanCarCfg.getValue("WiFiPassphrase") == "")
+  if (CanCfg.getValue("WiFiPassphrase") == "")
     {
       callingStream->println("\t- WiFiPassphrase not set, please set a Wireless Passphase");
       ret = false;
@@ -73,13 +73,13 @@ CanCarControl::loadWiFi(Stream *callingStream)
     return (false);
   callingStream->println("");
   callingStream->print("Starting Wireless Network ");
-  if (CanCarCfg.getValue("WiFiMode") == "STA")
+  if (CanCfg.getValue("WiFiMode") == "STA")
     {
       WiFi.mode(WIFI_MODE_STA); // calls esp_wifi_set_mode(WIFI_MODE_STA); and esp_wifi_start();
       WiFi.enableSTA(true);
       int scanResult = WiFi.scanNetworks(); // doing scan
       if(scanResult > 0)
-	WiFi.begin(CanCarCfg.getcValue("WiFiSSID"), CanCarCfg.getcValue("WiFiPassphrase"));
+	WiFi.begin(CanCfg.getcValue("WiFiSSID"), CanCfg.getcValue("WiFiPassphrase"));
       time = millis();
       while ((wfStatus = WiFi.status()) != WL_CONNECTED && (millis() - time) < (1000*60*1)) // 1 min timeout
 	{
@@ -94,7 +94,7 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	}
       callingStream->println("[OK]");
       callingStream->println("");
-      if (CanCarCfg.getValue("EnableWebService") == "true")
+      if (CanCfg.getValue("EnableWebService") == "true")
 	{
 	  web.spiffsinit(_spiffsstatus);
 	  callingStream->println("");
@@ -103,25 +103,25 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	  callingStream->println("");
 	}
       callingStream->print("Starting MDNS Responder ...\t");
-      if (!MDNS.begin(CanCarCfg.getcValue("WiFiHost")))
+      if (!MDNS.begin(CanCfg.getcValue("WiFiHost")))
 	{
 	  callingStream->println("[Failed]");
 	  //return (false);
 	}
       callingStream->println("[OK]");
       callingStream->println("");
-      if (CanCarCfg.getValue("EnableWebService") == "true")
+      if (CanCfg.getValue("EnableWebService") == "true")
 	{
-	  if (CanCarCfg.getValue("WWWuser") != "")
-	    web.setuser(CanCarCfg.getcValue("WWWuser"));
-	  if (CanCarCfg.getValue("WWWpass") != "")
-	    web.setpass(CanCarCfg.getcValue("WWWpass"));
+	  if (CanCfg.getValue("WWWuser") != "")
+	    web.setuser(CanCfg.getcValue("WWWuser"));
+	  if (CanCfg.getValue("WWWpass") != "")
+	    web.setpass(CanCfg.getcValue("WWWpass"));
 	  callingStream->print("Applying Web bindings ...\t");
 	  web.bindings();
 	  _webActive = true;
 	  callingStream->println("[OK]");
 	}
-      if (CanCarCfg.getValue("EnableTelnetService") == "true" && _telnetActive == false)
+      if (CanCfg.getValue("EnableTelnetService") == "true" && _telnetActive == false)
 	{
 	  callingStream->print("Starting Telnet Service... ");
 	  TelnetStream.begin();
@@ -132,7 +132,7 @@ CanCarControl::loadWiFi(Stream *callingStream)
 	  else
 	    callingStream->println("[Failed]");
 	  */
-	  shellTelnet = new espShell(&TelnetStream, false);
+	  shellTelnet = new espShell("CarSH", &TelnetStream, false);
 	  _telnetActive = true;
 	}
       this->_wifiActive = true;
@@ -239,12 +239,12 @@ CanCarControl::loadCfgSerial()
   String ssid = getParam("\r\nEnter SSID: ", true);
   String passphrase = getParam("\r\nEnter Passphrase: ", true);
 
-  CanCarCfg.setValue("host", host.c_str());
-  CanCarCfg.setValue("ssid", ssid.c_str());
-  CanCarCfg.setValue("passphrase", passphrase.c_str());
+  CanCfg.setValue("host", host.c_str());
+  CanCfg.setValue("ssid", ssid.c_str());
+  CanCfg.setValue("passphrase", passphrase.c_str());
   Serial.setTimeout(1000);
   Serial.println("All done! Saving ...");
-  if(CanCarCfg.saveCfg() == true)
+  if(CanCfg.saveCfg() == true)
     Serial.println("Configuration Successfuly Saved!\n");
   else
     Serial.println("Failed to Save Configuration!\n");
@@ -255,12 +255,12 @@ CanCarControl::loadCfgSerial()
 void
 CanCarControl::loadConfig()
 {
-  CanCarCfg.loadCfg();
+  CanCfg.loadCfg();
   Aliases.loadCfg();
   //  if (!cfgstatus || Cfg.getValue("ssid").length() == 0)
   //loadCfgSerial();
   //Serial.print("CfgLoad:ssid:");
-  //Serial.println(CanCarCfg.getValue("ssid"));
+  //Serial.println(CanCfg.getValue("ssid"));
   // Connect to WiFi network
 }
 

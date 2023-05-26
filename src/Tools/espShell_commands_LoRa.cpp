@@ -1,4 +1,4 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
 
 bool    lorasecure(espShell *sh, Stream *s, char **args)
@@ -39,17 +39,17 @@ void	auth_testings(espShell *sh, Stream *s)
   authToken	car;
   authToken	remote;
 
-  if (CanCarCfg.getValue("LoraRemoteKey") == "" || CanCarCfg.getValue("LoraCarKey") == ""
-      || CanCarCfg.getValue("LoraRemoteKey").length() != AUTH_TOKEN_SIZE
-      || CanCarCfg.getValue("LoraCarKey").length() != AUTH_TOKEN_SIZE)
+  if (CanCfg.getValue("LoraRemoteKey") == "" || CanCfg.getValue("LoraCarKey") == ""
+      || CanCfg.getValue("LoraRemoteKey").length() != AUTH_TOKEN_SIZE
+      || CanCfg.getValue("LoraCarKey").length() != AUTH_TOKEN_SIZE)
     {
       s->println("Error: Please set 16 bytes Lora remote/car keys first");
       return ;
     }
-  car.carKey(CanCarCfg.getValue("LoraCarKey").c_str());
-  car.remoteKey(CanCarCfg.getValue("LoraRemoteKey").c_str());
-  remote.carKey(CanCarCfg.getValue("LoraCarKey").c_str());
-  remote.remoteKey(CanCarCfg.getValue("LoraRemoteKey").c_str());
+  car.carKey(CanCfg.getValue("LoraCarKey").c_str());
+  car.remoteKey(CanCfg.getValue("LoraRemoteKey").c_str());
+  remote.carKey(CanCfg.getValue("LoraCarKey").c_str());
+  remote.remoteKey(CanCfg.getValue("LoraRemoteKey").c_str());
   showbuff(s, "generating token from car: ", car.genToken());
   showbuff(s, "Double Check ", car.token());
   car.encryptWithCar();

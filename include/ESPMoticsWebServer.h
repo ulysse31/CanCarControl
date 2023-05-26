@@ -10,7 +10,7 @@
 # define FORMAT_SPIFFS_IF_FAILED true
 # include "SPIFFS.h"
 
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 # define BUFFLEN    256 //SPIFFS’ 256 byte minimum file allocation unit
 
 class ESPMoticsWebServer;

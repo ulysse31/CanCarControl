@@ -1,4 +1,4 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
 typedef struct	s_cfgcmd
 {
@@ -12,7 +12,7 @@ bool		cfg_list(Stream *s, char **args)
   cfgNode	*p;
 
   s->println("KEY:\tVALUE:");
-  for (p = CanCarCfg.startNode(); p; p = p->next())
+  for (p = CanCfg.startNode(); p; p = p->next())
     {
       s->print(p->key());
       s->print(":\t");
@@ -30,7 +30,7 @@ bool		cfg_get(Stream *s, char **args)
       s->println("Usage: cfg get <key>");
       return (false);
     }
-  res =CanCarCfg.getValue(args[2]); 
+  res =CanCfg.getValue(args[2]); 
   if (res == "")
     {
       s->print(args[2]);
@@ -68,7 +68,7 @@ bool		cfg_set(Stream *s, char **args)
       s->println("Error: Value cannot be empty");
       return (false);
     }
-  if(CanCarCfg.setValue(key, val) == false)
+  if(CanCfg.setValue(key, val) == false)
     {
       s->println("Error: Could not set key/value pair");
       return (false);
@@ -83,7 +83,7 @@ bool	cfg_del(Stream *s, char **args)
       s->println("Usage: cfg del <key>");
       return (false);
     }
-  if(CanCarCfg.delValue(args[2]) == false)
+  if(CanCfg.delValue(args[2]) == false)
     {
       s->println("Error: Could not delete key => not found?");
       return (false);
@@ -93,7 +93,7 @@ bool	cfg_del(Stream *s, char **args)
 
 bool	cfg_save(Stream *s, char **args)
 {
-  if (CanCarCfg.saveCfg() == false)
+  if (CanCfg.saveCfg() == false)
     {
       s->println("Error: Could not save config");
       return (false);

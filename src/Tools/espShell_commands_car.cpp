@@ -1,4 +1,4 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
 // this file is car specific
 // you might want to add here your own functions that need to process data from the car

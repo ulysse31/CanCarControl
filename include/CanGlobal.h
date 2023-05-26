@@ -108,7 +108,7 @@ class CanCarControl;
 
 
 # ifdef _DECLARE_GLOBAL_CANCARCONTROL_
-ESPMoticsCfg            CanCarCfg(CFGFILE, '=');
+ESPMoticsCfg            CanCfg(CFGFILE, '=');
 ESPMoticsCfg            Aliases(ALIASFILE, '=');
 ESPMoticsWebServer      web(80);
 espShell *		shell;
@@ -118,7 +118,7 @@ espShell *		shellTelnet;
 MCP_CAN			mcp2515(MCP_CS);
 unsigned long		LastActivity;
 #  else
-extern ESPMoticsCfg		CanCarCfg;
+extern ESPMoticsCfg		CanCfg;
 extern ESPMoticsCfg		Aliases;
 extern espShell *		shell;
 extern espShell *		shellLoRa;

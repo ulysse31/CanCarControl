@@ -1,40 +1,8 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
-t_cmdfunc       gl_commands[] = {
-  { "cat", "show file content", cat },
-  { "ls", "list files", ls },
-  { "rm", "delete file", rm },
-  { "cp", "copy file", cp },
-  { "mv", "rename file", cp },
-  { "ed", "a line-per-line basic text editor", ed },  
-  { "md5sum", "calculates md5 of a file", md5sum },
-  { "xmreceive", "receive file from tty using XMODEM protocol", xmreceive },
-  { "candump", "CAN Dumper", candump },
-  { "canwait", "CAN packet waiting for specific identifiers", canwait },
-  { "canwrite", "CAN packet writing: from arguments", canwrite },
-  { "fwupdate", "firmware update command", fwupdate },
-  { "ifconfig", "show network connection states", ifconfig },
-  { "interactive", "enable/disable interactive shell parameters (prompt, verbosity...)", interactive },
-  { "setecho", "enable/disable character echoing", setecho },
-  { "cfg", "main config parameters editor", cfg },
-  { "alias", "alias command / shortcuts", alias },
-  { "pin", "pin input/output control", pin },
-  { "sleep", "sleep status/management command", cmd_sleep },
-  { "free", "show free memory", cmd_free },
-  { "echo", "echo text", echo },
-  { "serial", "serial redirection tool", serial },
-  { "exec", "execute commands from file", exec },
-  { "doorstatus", "waits and extract door status from CAN-Bus GPS data", doorstatus },
-  { "gps", "waits and extract GPS positioning from CAN-Bus GPS data", gps },
-  { "delay", "sleeps for a specified number of milliseconds", cmd_delay },
-  { "lorasend", "send command via lora", lorasend },
-  { "lorasecure", "enable/disable auth in lorashell", lorasecure },
-  { "restart", "restart the device", restart },
-  {0, 0, 0}
-};
+#include "gl_commands.h"
 
-
-espShell::espShell(Stream *s, bool echo, bool interactive, bool secure)
+espShell::espShell(const char *name, Stream *s, bool echo, bool interactive, bool secure)
 {
   _serial = s;
   _line = 0;
@@ -43,6 +11,7 @@ espShell::espShell(Stream *s, bool echo, bool interactive, bool secure)
   _interactive = interactive;
   _echo = echo;
   _secure = secure;
+  _name = name;
   _line = (char *)(xmalloc(sizeof(*_line) * (_linelen + 1)));
   memset(_line, 0, _linelen);
   memset(_currentPath, 0, MAX_SPIFFS_NAME_LEN);
@@ -106,13 +75,13 @@ espShell::authCheck()
   char		buff[AUTH_TOKEN_SIZE];
   authToken	car;
 
-  if (CanCarCfg.getValue("LoraRemoteKey") == "" || CanCarCfg.getValue("LoraCarKey") == ""
-      || CanCarCfg.getValue("LoraRemoteKey").length() != AUTH_TOKEN_SIZE
-      || CanCarCfg.getValue("LoraCarKey").length() != AUTH_TOKEN_SIZE)
+  if (CanCfg.getValue("LoraRemoteKey") == "" || CanCfg.getValue("LoraCarKey") == ""
+      || CanCfg.getValue("LoraRemoteKey").length() != AUTH_TOKEN_SIZE
+      || CanCfg.getValue("LoraCarKey").length() != AUTH_TOKEN_SIZE)
     return (false);
 
-  car.carKey(CanCarCfg.getcValue("LoraCarKey"));
-  car.remoteKey(CanCarCfg.getcValue("LoraRemoteKey"));
+  car.carKey(CanCfg.getcValue("LoraCarKey"));
+  car.remoteKey(CanCfg.getcValue("LoraRemoteKey"));
   car.genToken();
   car.copyToken(nounce);
   //showbuff(&Serial, "\nDEBUG: token:", nounce);
@@ -172,7 +141,7 @@ espShell::checkCmdLine()
 
 
 bool
-espShell::runLine(char *line)
+espShell::runLine(const char *line)
 {
   bool ret;
 
@@ -298,7 +267,9 @@ espShell::_prompt()
 {
   if (_interactive)
     {
-      _serial->print("[CarSH: ");
+      _serial->print("[");
+      _serial->print(_name);
+      _serial->print(": ");
       _serial->print(_currentPath);
       _serial->print(" ]> ");
     }

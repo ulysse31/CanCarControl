@@ -1,4 +1,4 @@
-#include "CanCarControl.h"
+#include "CanGlobal.h"
 
 typedef struct	s_genericcmd
 {
@@ -387,19 +387,19 @@ bool	cmd_delay(espShell *sh, Stream *s, char **args)
 
 bool	sleep_status(Stream *s, char **args)
 {
-  if (CanCarCfg.getValue("EnableSleep") == "true")
+  if (CanCfg.getValue("EnableSleep") == "true")
     s->println("Sleep is on");
   else
     s->println("Sleep is off");
-  if (CanCarCfg.getValue("InactivityTimeout") != "")
+  if (CanCfg.getValue("InactivityTimeout") != "")
     {
       s->print("Sleep after ");
-      s->print(CanCarCfg.getValue("InactivityTimeout"));
+      s->print(CanCfg.getValue("InactivityTimeout"));
       s->println(" seconds of Inactivity");
     }
   else
     {
-      if (CanCarCfg.getValue("EnableSleep") == "true")
+      if (CanCfg.getValue("EnableSleep") == "true")
 	s->println("BUT will not go to Sleep because no InactivityTimeout is set");
       else
 	s->println("And not InactivityTimeout is set");
@@ -409,14 +409,14 @@ bool	sleep_status(Stream *s, char **args)
 
 bool	sleep_disable(Stream *s, char **args)
 {
-  CanCarCfg.setValue("EnableSleep", "false");
+  CanCfg.setValue("EnableSleep", "false");
   s->println("Sleep is off");
   return (true);
 }
 
 bool	sleep_enable(Stream *s, char **args)
 {
-  CanCarCfg.setValue("EnableSleep", "true");
+  CanCfg.setValue("EnableSleep", "true");
   s->println("Sleep is on");
   return (true);
 }
@@ -425,12 +425,12 @@ bool	sleep_time(Stream *s, char **args)
 {
   if (args[2] == 0)
     {
-      if (CanCarCfg.getValue("InactivityTimeout") == "")
+      if (CanCfg.getValue("InactivityTimeout") == "")
 	s->println("InactivityTimeout is not set yet");
       else
 	{
 	  s->print("InactivityTimeout is actually set to ");
-	  s->print(CanCarCfg.getValue("InactivityTimeout"));
+	  s->print(CanCfg.getValue("InactivityTimeout"));
 	  s->println(" seconds");
 	}
       return (true);
@@ -442,7 +442,7 @@ bool	sleep_time(Stream *s, char **args)
   time = args[2];
   t = time.toInt();
   res = t;
-  CanCarCfg.setValue("InactivityTimeout", res.c_str());
+  CanCfg.setValue("InactivityTimeout", res.c_str());
   s->print("InactivityTimeout is now set to ");
   s->print(res);
   s->println(" seconds");

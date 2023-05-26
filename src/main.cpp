@@ -1,5 +1,5 @@
 #define _DECLARE_GLOBAL_CANCARCONTROL_
-#include <CanCarControl.h>
+#include <CanGlobal.h>
 
 void setup()
 {
@@ -12,7 +12,7 @@ void setup()
 void loop()
 {
   CanCarControl.taskLoop();
-  if (CanCarCfg.getValue("EnableSleep") == "true" && CanCarCfg.getValue("InactivityTimeout") != ""
-      && (millis() - LastActivity) > (CanCarCfg.getValue("InactivityTimeout").toInt() * 1000))
+  if (CanCfg.getValue("EnableSleep") == "true" && CanCfg.getValue("InactivityTimeout") != ""
+      && (millis() - LastActivity) > (CanCfg.getValue("InactivityTimeout").toInt() * 1000))
     CanCarControl.goToSleep();
 }
