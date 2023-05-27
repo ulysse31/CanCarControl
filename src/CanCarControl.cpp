@@ -287,6 +287,9 @@ CanCarControl::taskLoop()
 	  TelnetStream.flush();
 	}
     }
+  if ((millis() % 10000) == 0)		// checks every 10s
+    if (this->checkCANActive(400))	// if there is an activity during 400 ms period in the CAN-Bus network
+      LastActivity = millis();		// if yes (car is active), then ... delay next sleep / stay awake
   delay(10);
 }
 
@@ -303,4 +306,20 @@ CanCarControl::goToSleep()
      }
    Serial.println("\n****************\n* Inactivity Timeout\n*  Going to Sleep\n****************\n");
    esp_deep_sleep_start();
+}
+
+
+bool
+CanCarControl::checkCANActive(unsigned long mstimeout)
+{
+  INT32U        id;
+  uint8_t       len;
+  uint8_t       data[8];
+  unsigned long time;
+
+  time = millis();
+  while((millis() - time) < mstimeout)
+    if (mcp2515.readMsgBuf(&id, &len, data) == CAN_OK)
+      return (true);
+  return (false);
 }

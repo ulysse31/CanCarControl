@@ -166,7 +166,7 @@ espShell::_readLine()
   while (_serial->available())
     {
       _line[_endline] = _serial->read();
-      LastActivity = millis();
+      //LastActivity = millis();
       if (_endline == 0 && _line[_endline] == '\n')
 	  return (false);
       if (_endline == 0 && _line[_endline] == 0x08)
@@ -284,6 +284,7 @@ espShell::_interpreteLine()
   t_cmdfunc	*f;
   bool		found = false;
   bool		quote = false;
+  bool		ret = false;
   
   if (this->_endline <= 1)
     return (false);
@@ -319,10 +320,11 @@ espShell::_interpreteLine()
   for (f = gl_commands; f && f->name; f++)
     if ((i = strcmp(f->name, args[0])) == 0)
       {
-	f->fct(this, this->_serial, args);
+	ret = f->fct(this, this->_serial, args);
 	if (_interactive == false)
 	  this->_serial->write(0x04);
-	LastActivity = millis();
+	if (ret)
+	  LastActivity = millis();
 	found = true;
 	break ;
       }

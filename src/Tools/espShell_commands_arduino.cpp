@@ -393,9 +393,9 @@ bool	sleep_status(Stream *s, char **args)
     s->println("Sleep is off");
   if (CanCfg.getValue("InactivityTimeout") != "")
     {
-      s->print("Sleep after ");
+      s->print("Sleep Inactivity Timeout: ");
       s->print(CanCfg.getValue("InactivityTimeout"));
-      s->println(" seconds of Inactivity");
+      s->println(" secs");
     }
   else
     {
@@ -404,7 +404,13 @@ bool	sleep_status(Stream *s, char **args)
       else
 	s->println("And not InactivityTimeout is set");
     }
-  return (true);
+  if (CanCfg.getValue("EnableSleep") == "true" && CanCfg.getValue("InactivityTimeout") != "")
+    {
+      s->print("Going to sleep in ");
+      s->print(((CanCfg.getValue("InactivityTimeout").toInt() * 1000) - (millis() - LastActivity)) / 1000);
+      s->println(" seconds ... if no valid activity");
+    }
+  return (false);
 }
 
 bool	sleep_disable(Stream *s, char **args)
@@ -472,10 +478,7 @@ bool	cmd_sleep(espShell *sh, Stream *s, char **args)
     }
   for (int i = 0; gl_sleepcmd[i].name; i++)
     if (strcmp(args[1], gl_sleepcmd[i].name) == 0)
-      {
-	gl_sleepcmd[i].fct(s, args);
-	return (true);
-      }
+      return (gl_sleepcmd[i].fct(s, args));
   return (false);
 }
 

@@ -146,6 +146,7 @@ public:
   bool                  isWiFiActive() { return (_wifiActive); }
   bool			isWebActive() { return (_webActive); }
   bool			isTelnetActive() { return (_telnetActive); }
+  bool			checkCANActive(unsigned long mstimeout);
   void			loadConfig();
   void			loadServices();
   void			taskLoop();
