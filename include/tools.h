@@ -2,6 +2,7 @@
 # define __TOOLS_H__
 
 const char * getfullpath(const char *ptr);
+bool    send_packet(INT32U id, INT8U len, INT8U *data);
 
 bool    cat(espShell *sh, Stream *s, char **args);
 bool    ls(espShell *sh, Stream *s, char **args);

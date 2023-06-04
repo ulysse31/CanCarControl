@@ -288,7 +288,7 @@ CanCarControl::taskLoop()
 	}
     }
   if ((millis() % 10000) == 0)		// checks every 10s
-    if (this->checkCANActive(400))	// if there is an activity during 400 ms period in the CAN-Bus network
+    if (this->checkCANActive(200))	// if there is an activity during 200 ms period in the CAN-Bus network
       LastActivity = millis();		// if yes (car is active), then ... delay next sleep / stay awake
   delay(10);
 }
