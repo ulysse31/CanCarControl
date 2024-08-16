@@ -1,8 +1,8 @@
 #include "CanGlobal.h"
 
 // this file is car specific
-// you might want to add here your own functions that need to process data from the car
-
+// you might want to add/modify here your own functions that need to process data from the car
+// this is done/setup for my own car : an old bmw e87 CCC model from 2005
 
 typedef union	u_gpspos
 {
@@ -59,6 +59,22 @@ t_doortable	gl_doortable[] = {
   {0, 0, 0}
 };
 
+
+
+bool		canwake(espShell *sh, Stream *s, char **args)
+{
+  INT32U        id = 0x130;
+  uint8_t       len = 0x5;
+  uint8_t       data[] = { 0x0, 0xD, 0x14, 0xF, 0x9 };
+
+  if (send_packet(id, len, data) == false)
+    {
+      s->println("Error sending packet");
+      return (false);
+    }
+  return (true);
+}
+
 bool		doorstatus(espShell *sh, Stream *s, char **args)
 {
   INT32U        id;
@@ -72,6 +88,8 @@ bool		doorstatus(espShell *sh, Stream *s, char **args)
   init = millis();
   memset(doorstat, 0, sizeof(*doorstat) * NB_DOORS);
   count = 0;
+  if (CanCarControl.checkCANActive(200) == false)
+    canwake(sh, s, args);
   while (count < NB_DOORS)
     {
       if (mcp2515.readMsgBuf(&id, &len, data) == CAN_OK &&
@@ -121,10 +139,12 @@ bool		gps(espShell *sh, Stream *s, char **args)
   uint8_t       len;
   uint8_t       data[8];
   unsigned long init = 0;
-  unsigned long timeout = 1000 * 60 * 3; // 3 min timeout for now
+  unsigned long timeout = 1000 * 60; // 1 min timeout for now
   double flong;
   double flat;
 
+  if (CanCarControl.checkCANActive(200) == false)
+    canwake(sh, s, args);
   init = millis();
   while (true)
     {
