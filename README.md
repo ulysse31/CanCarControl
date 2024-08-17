@@ -133,3 +133,12 @@ This allows the alias to be loaded at boot, and we are done ... we just need the
 > lorasend lock
   
 On the remote shell (or via its screen GUI, which launches the shell command ...) and the remote will lock the car ^^'  
+  
+  
+  
+## My Config Sample
+
+You'll find inside the file myConfig_dump.txt, a "dump" of the content of my filesystem.
+Its a simple terminal output, in which I executed "ls", and then "cat" on all the files present.
+With this, you can recreate the same command shortcuts/outputs that I use in combination with my CanRemote config, to use it as a start, and/or inspire your own commands/shortcuts.
+The only modification that I made to the output, are for the keys used on the auth tokens encryption/decryption handshake, used by my CanRemote and my CanCarControl, the wireless identifier and passphrase and the web user login/pass (all tagged as "&lt;REDACTED&gt;").
