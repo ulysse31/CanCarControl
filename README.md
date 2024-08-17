@@ -4,6 +4,8 @@
 ###  DO IT AT YOUR OWN RISK !!!
 ###  END DISCLAIMER
   
+This project goes with https://github.com/ulysse31/CanRemote
+
 CanBus car control device: read, interpret &amp; inject CAN Bus messages on your car.  
 The goal of this project is to play with the car, with a "DIY"/"Homemade" remote (other repo) in order to do stuff such as:  
   
