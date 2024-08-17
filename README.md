@@ -1,4 +1,9 @@
 # CanCarControl
+###  DISCLAIMER
+###  I AM NOT RESPONSIBLE OF WHAT YOU DO. REVERSE ENGINEERING & INJECTING PACKETS INTO YOUR CAR NETWORK CAN BE DANGEROUS
+###  DO IT AT YOUR OWN RISK !!!
+###  END DISCLAIMER
+  
 CanBus car control device: read, interpret &amp; inject CAN Bus messages on your car.  
 The goal of this project is to play with the car, with a "DIY"/"Homemade" remote (other repo) in order to do stuff such as:  
   
@@ -9,7 +14,7 @@ The goal of this project is to play with the car, with a "DIY"/"Homemade" remote
 * Get the windows and door status
 * ...  
   
-All this remotely (of course) within a range of 2/3 kilometers ^^" (thanks LoRa)  
+All this remotely (of course) within a range of kilometers ^^" (thanks LoRa)  
   
   
 This project uses the following hardware:
@@ -19,6 +24,7 @@ This project uses the following hardware:
 * A LM2596S module board as power supply (regulated to 5V) 
 
 The 6 pin connector feats the BMW e87 CID display connector (this is for ease in my car, but fill free to take my schematics and make your own).  
+#### UPDATE: the 6 pin connect is "a good start" ... but has one issue => the 12V on it gets cutoff by the car relay in order to reduce battery usage ... I still use it for CANBUS access, but I also installed two new wirings that comes from the 12V CCC socket, up to where is orginally located the CID display to power my unit. This allows my device to be always available (it goes to sleep when not needed, and wakes up in case of LoRa activity).  
   
 For the schematics of CanCarControl, please visit:  
 
