@@ -20,7 +20,7 @@ CanCarControl::init()
   pinMode(LUATOS_LED2, OUTPUT);
   digitalWrite(MCP_PWR, HIGH);
   digitalWrite(LUATOS_LED1, HIGH);
-  Serial1.begin(LORA_SETUP_BAUD, SERIAL_8N1, LUATOS_RX1, LUATOS_TX1);
+  LORA_SERIAL.begin(LORA_SETUP_BAUD, SERIAL_8N1, LUATOS_RX1, LUATOS_TX1);
   Serial.begin(SERIAL_DEFAULT_SPEED);
   Serial.println("####################### CanCarControl INIT #######################");
   SPI.begin(LUATOS_SCK, LUATOS_MISO, LUATOS_MOSI, LUATOS_SS);
@@ -28,7 +28,7 @@ CanCarControl::init()
     Serial.println("Error initializing MCP2515");
   mcp2515.setMode(MCP_NORMAL);
   shell = new espShell("CarSH", &Serial);
-  shellLoRa = new espShell("CarSH", &Serial1, false, false, true);
+  shellLoRa = new espShell("CarSH", &LORA_SERIAL, false, false, true);
   shellTelnet = 0;
   _wifiActive = false;
   _webActive = false;

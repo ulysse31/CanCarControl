@@ -78,19 +78,19 @@ bool    lorasend(espShell *sh, Stream *s, char **args)
       return (true);
     }
   len = strlen(args[1]);
-  Serial1.write("\r\n", 2);     // if asleep ... sending fake order to wake up
+  LORA_SERIAL.write("\r\n", 2);     // if asleep ... sending fake order to wake up
   delay(100);                   // and wait a bit for it to get awake
-  while (Serial1.available())   // flushing any remaining bytes
-    c = Serial1.read();
-  Serial1.write(args[1], len);
-  Serial1.write("\r\n", 2);
+  while (LORA_SERIAL.available())   // flushing any remaining bytes
+    c = LORA_SERIAL.read();
+  LORA_SERIAL.write(args[1], len);
+  LORA_SERIAL.write("\r\n", 2);
   time = millis();
-  while (Serial1.available() == 0)
+  while (LORA_SERIAL.available() == 0)
     if ((millis() - time) > 1000)
       break ;
     else
       delay(10);
-  c  = ((char)Serial1.read());
+  c  = ((char)LORA_SERIAL.read());
   if (c != 0x04)
   {
     s->print("Error: No Answer (0x");
@@ -100,9 +100,9 @@ bool    lorasend(espShell *sh, Stream *s, char **args)
   }
   time = millis();
   while (true)
-    if (Serial1.available())
+    if (LORA_SERIAL.available())
       {
-        c = ((char)Serial1.read());
+        c = ((char)LORA_SERIAL.read());
         if (c == 0x04)
           break ;
         s->print(c);
