@@ -65,6 +65,7 @@ ESPMoticsCfg::loadCfg()
   while (_fd.available())
   {
     line = _fd.readStringUntil('\n');
+    line.replace("\r",""); // cleanup manually edited file
     //Serial.println("DEBUG LINE READ");
     if (_node)
       {
